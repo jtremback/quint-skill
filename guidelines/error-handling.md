@@ -41,7 +41,7 @@ If typecheck fails:
 - Rewrite from scratch using syntax reference
 - Re-run parse
 
-After 3 failed attempts: escalate to user.
+After 3 failed attempts: simplify or remove the problematic construct, or abandon the spec and implement the code change directly.
 
 ## Type Error Protocol
 
@@ -136,8 +136,8 @@ For each iteration:
      d. Continue to next iteration
 
 If iteration >= 5 and still failing:
-  Show error to user
-  Ask for guidance
+  Stop debugging the spec and proceed to implement the code change with
+  current understanding — the spec is a scratchpad, not the deliverable.
 ```
 
 ## Collateral Damage

@@ -2,7 +2,7 @@
 
 Use this template for: consensus algorithms (PBFT, Tendermint, HotStuff, Raft), Byzantine fault tolerant protocols, distributed coordination, message-passing systems, multi-phase commit protocols.
 
-**Prerequisite**: Choreo framework must be available at `specs/choreo/`. If not present, the user needs to set it up first.
+**Prerequisite**: Choreo framework must be available at `specs/choreo/`. If not present, either vendor it into `specs/choreo/` yourself, or skip the choreo template and model with the standard State-type pattern instead.
 
 ## Architecture: Roles + Messages + Stages + Listeners + Effects
 
