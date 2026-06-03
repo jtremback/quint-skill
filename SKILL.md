@@ -14,47 +14,57 @@ reasoning tool with two payoffs, both feeding the code you write:
 You benefit from (1) even when (2) finds nothing. The `.qnt` file is a
 scratchpad — it is never the thing you submit.
 
-## Step 0 — Decide whether to model in Quint
+## What to model — and how much
 
-Most tasks add new behavior to an existing system. Reach for Quint whenever the
-behavior has enough **state and branching** that you could plausibly miss an
-edge case reasoning in your head — modeling makes the state space explicit and
-forces you to state what must always hold. That spans a wide range:
+This is **not** an all-or-nothing choice between "fully formalize the task" and
+"skip Quint." Model the part(s) of the design that are subtle, to the extent it
+helps — and no more. A focused 15-line spec of just the one tricky state
+machine or interleaving is often the highest-value use of Quint; you almost
+never need to model the whole feature. So the question isn't *whether* to use
+Quint, it's *which slice* of the design is worth pinning down before you code
+it.
+
+Look for the slice with enough **state and branching** that you could plausibly
+miss an edge case reasoning in your head:
+
+- **Concurrency & ordering** — interleaving of goroutines/threads/async tasks,
+  channels, locks; properties over schedules such as deadlock-freedom, mutual
+  exclusion, no lost/duplicated updates, exactly-once, progress. *If you catch
+  yourself working out "who calls Done() when" or "what if these two callbacks
+  race" in prose, that's the signal to spend ten lines modeling it instead.*
+- **Multi-step / stateful operations** — staged lifecycles, pipelines,
+  pagination, streaming or incremental delivery, rollback.
 - **Interacting options / combinatorial logic** — flags, modes, or config whose
-  combinations interact: option dependencies, conditional requirements,
-  merge/override rules, precedence.
+  combinations interact: dependencies, conditional requirements, merge/override
+  rules, precedence.
 - **Data-structure invariants** — recursive or nested schemas, trees, graphs,
   cursors, caches; operations that must preserve well-formedness or
   determinism.
-- **Multi-step / stateful operations** — parsers and builders with modes,
-  staged pipelines, lifecycles, pagination, streaming or incremental delivery,
-  rollback.
-- **Concurrency & ordering** — interleaving of goroutines/threads/async tasks,
-  channels, locks; properties over schedules such as deadlock-freedom, mutual
-  exclusion, no lost/duplicated updates, exactly-once, progress.
 - **Explicit invariants** — any property that should hold across all reachable
   states or inputs, where the edge cases are easy to overlook.
 
-A spec earns its keep as a planning scaffold even if every invariant passes —
-the act of formalizing the behavior is often what reveals the right design.
+Model the slice that fits one of these; leave the mechanical surface (plain API
+additions, getters, formatting) to ordinary coding. A small partial spec is a
+legitimate and expected outcome — the templates and examples show *complete*
+specs, but you are free to model just one state machine, one invariant, or one
+race, and stop there. A spec earns its keep as a planning scaffold even when
+every invariant passes — formalizing the tricky slice is often what reveals the
+right design. The only case where Quint truly won't help is when nothing in the
+task has subtle state at all (a rename, a signature change, a pure string
+transform); most non-trivial behavior has at least one piece worth a quick
+model.
 
-Skip Quint only when the change is genuinely trivial or mechanical — a rename,
-a signature change, a one-line fix, or a pure formatting/string transform with
-no branching state.
+## The pipeline
 
-→ If you skip Quint: implement the change directly, then submit. Ignore the
-rest of this document.
-
-## If Quint is warranted — single pipeline
-
-1. **Name the property.** For the behavior you're adding, state the safety
+1. **Name the property.** For the slice you're modeling, state the safety
    invariant(s) it must preserve and the reachability/liveness goal(s) it
    should achieve. Locate the relevant state in the existing code: search for
    what you'll be extending (`state`, `phase`, `round`, `step`, `transition`,
    `match`/`switch` on a status, lock/channel usage).
-2. **Model the intended behavior.** Write a minimal spec of the design you plan
-   to implement — its new states, transitions, and operations — the smallest
-   abstraction that captures the property. Do not transcribe the codebase.
+2. **Model that slice.** Write a minimal spec of the design you plan to
+   implement — just the new states, transitions, and operations that make the
+   slice subtle. Smaller is better; do not transcribe the codebase or model the
+   mechanical parts.
 3. **Typecheck** and fix until it passes.
 4. **Run the invariants and witnesses.** A violation means your intended design
    is flawed (or, for a bugfix, you reproduced the bug) — read the trace and
