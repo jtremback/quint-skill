@@ -135,7 +135,7 @@ Put this plan in the THOUGHT of the same turn in which you write the spec. The a
 
 #### Write the spec
 
-Generate the `.qnt` file. Default path: `specs/{module_name_lowercase}.qnt`. Create `specs/` directory if needed.
+Generate the `.qnt` file **outside the project working tree** so it never lands in your submitted diff — the spec is a scratchpad, not a deliverable. Write it under `/tmp`, e.g. `/tmp/quint-specs/{module_name_lowercase}.qnt` (`mkdir -p /tmp/quint-specs` first). Do not create a `specs/` directory inside the repo.
 
 Follow the template from the guideline file you read. Apply patterns exactly — the State Type pattern (encapsulate state, pure functions, thin actions) is mandatory for standard specs.
 
@@ -148,7 +148,7 @@ Follow the template from the guideline file you read. Apply patterns exactly —
 cat /opt/quint-skill/guidelines/error-handling.md
 ```
 
-`quint` is preinstalled on PATH — invoke it directly (no `npx`). **Wrap every `quint` invocation in `timeout 30`** so a pathological spec cannot hang the turn (e.g. `timeout 30 quint typecheck …`); a well-formed spec typechecks in <1s and simulates in well under a second, so 30s only ever fires on a genuine hang.
+`quint` is preinstalled on PATH — invoke it directly (no `npx`). **Wrap `quint` invocations (and only `quint`) in `timeout 30`** so a pathological spec cannot hang the turn (e.g. `timeout 30 quint typecheck …`); a well-formed spec typechecks in <1s and simulates in well under a second, so 30s only ever fires on a genuine hang. Do **not** apply this 30s timeout to project build/test commands (`go build`, `cargo build`, `npm test`, etc.) — those legitimately take minutes and a short timeout will kill them; run them without a timeout or a generous one.
 
 Run:
 ```bash

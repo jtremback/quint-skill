@@ -13,7 +13,9 @@
 
 ### Commands
 
-**Prefix every `quint` command with `timeout 30`.** A well-formed spec
+**Prefix every `quint` command — and only `quint` commands — with `timeout
+30`.** (Never wrap project build/test commands like `go build` or `npm test`
+in this short timeout; they take minutes and it will kill them.) A well-formed spec
 simulates in well under a second; a 30s cap only fires on a pathological spec
 that would otherwise hang indefinitely (see `apalache::generate` in
 builtins.md), killing it so you get an error to react to instead of a dead
