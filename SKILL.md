@@ -18,20 +18,17 @@ scratchpad — it is never the thing you submit.
 
 This is **not** an all-or-nothing choice between "fully formalize the task" and
 "skip Quint." Model the part(s) of the design that are subtle, to the extent it
-helps — and no more. A focused 15-line spec of just the one tricky state
-machine or interleaving is often the highest-value use of Quint; you almost
-never need to model the whole feature. So the question isn't *whether* to use
-Quint, it's *which slice* of the design is worth pinning down before you code
-it.
+helps — and no more. So the question isn't *whether* to use Quint, it's *which
+slice* of the design is worth pinning down before you code it.
 
 Look for the slice with enough **state and branching** that you could plausibly
 miss an edge case reasoning in your head:
 
 - **Concurrency & ordering** — interleaving of goroutines/threads/async tasks,
   channels, locks; properties over schedules such as deadlock-freedom, mutual
-  exclusion, no lost/duplicated updates, exactly-once, progress. *If you catch
-  yourself working out "who calls Done() when" or "what if these two callbacks
-  race" in prose, that's the signal to spend ten lines modeling it instead.*
+  exclusion, no lost/duplicated updates, exactly-once, progress. *If you're
+  working out "who calls Done() when" or "what if these callbacks race" in
+  prose, model it instead.*
 - **Multi-step / stateful operations** — staged lifecycles, pipelines,
   pagination, streaming or incremental delivery, rollback.
 - **Interacting options / combinatorial logic** — flags, modes, or config whose
@@ -44,15 +41,10 @@ miss an edge case reasoning in your head:
   states or inputs, where the edge cases are easy to overlook.
 
 Model the slice that fits one of these; leave the mechanical surface (plain API
-additions, getters, formatting) to ordinary coding. A small partial spec is a
-legitimate and expected outcome — the templates and examples show *complete*
-specs, but you are free to model just one state machine, one invariant, or one
-race, and stop there. A spec earns its keep as a planning scaffold even when
-every invariant passes — formalizing the tricky slice is often what reveals the
-right design. The only case where Quint truly won't help is when nothing in the
-task has subtle state at all (a rename, a signature change, a pure string
-transform); most non-trivial behavior has at least one piece worth a quick
-model.
+additions, getters, formatting) to ordinary coding. A partial spec — one state
+machine, one invariant, one race — is fine. Quint only fails to help when
+nothing in the task has subtle state at all (a rename, a signature change, a
+pure string transform).
 
 ## The pipeline
 
@@ -61,10 +53,9 @@ model.
    should achieve. Locate the relevant state in the existing code: search for
    what you'll be extending (`state`, `phase`, `round`, `step`, `transition`,
    `match`/`switch` on a status, lock/channel usage).
-2. **Model that slice.** Write a minimal spec of the design you plan to
-   implement — just the new states, transitions, and operations that make the
-   slice subtle. Smaller is better; do not transcribe the codebase or model the
-   mechanical parts.
+2. **Model that slice.** Write a spec of the design you plan to implement —
+   just the new states, transitions, and operations that make the slice subtle;
+   don't transcribe the codebase or model the mechanical parts.
 3. **Typecheck** and fix until it passes.
 4. **Run the invariants and witnesses.** A violation means your intended design
    is flawed (or, for a bugfix, you reproduced the bug) — read the trace and
