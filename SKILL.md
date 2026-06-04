@@ -149,7 +149,7 @@ Follow the template from the guideline file you read. Apply patterns exactly —
 cat /opt/quint-skill/guidelines/error-handling.md
 ```
 
-`quint` is preinstalled on PATH — invoke it directly (no `npx`). **Wrap `quint` invocations (and only `quint`) in `timeout 30`** so a pathological spec cannot hang the turn (e.g. `timeout 30 quint typecheck …`); a well-formed spec typechecks in <1s and simulates in well under a second, so 30s only ever fires on a genuine hang. Do **not** apply this 30s timeout to project build/test commands (`go build`, `cargo build`, `npm test`, etc.) — those legitimately take minutes and a short timeout will kill them; run them without a timeout or a generous one.
+`quint` is preinstalled on PATH — invoke it directly (no `npx`). **Wrap `quint` invocations (and only `quint`) in `timeout 60`** so a pathological spec cannot hang the turn (e.g. `timeout 60 quint typecheck …`). Typecheck is sub-second; `quint run` on a real spec takes a few seconds to tens of seconds (the simulator is interpreted), so 60s gives headroom while still catching a genuine hang. If a `quint run` keeps hitting 60s, your spec or sample budget is too big — shrink it rather than raising the timeout. Do **not** apply this timeout to project build/test commands (`go build`, `cargo build`, `npm test`, etc.) — those legitimately take minutes and a short timeout will kill them; run them without a timeout or a generous one.
 
 Run:
 ```bash

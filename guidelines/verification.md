@@ -21,19 +21,20 @@ these specs. (`quint typecheck` doesn't execute the spec, so it needs no
 backend flag.)
 
 **Prefix every `quint` command — and only `quint` commands — with `timeout
-30`.** (Never wrap project build/test commands like `go build` or `npm test`
-in this short timeout; they take minutes and it will kill them.) A well-formed spec
-simulates in well under a second; a 30s cap only fires on a pathological spec
-that would otherwise hang indefinitely (see `apalache::generate` in
-builtins.md), killing it so you get an error to react to instead of a dead
-turn. The examples below omit the `timeout` prefix for brevity — always add it
-in practice.
+60`.** (Never wrap project build/test commands like `go build` or `npm test`
+in this short timeout; they take minutes and it will kill them.) Typecheck is
+sub-second; `quint run` on a real spec takes seconds to tens of seconds (the
+TypeScript evaluator is interpreted), so 60s gives headroom while still catching
+a genuine hang. If a run keeps hitting 60s, shrink the spec or the
+`--max-samples`/`--max-steps` budget rather than raising the timeout. The
+examples below omit the `timeout` prefix for brevity — always add it in
+practice.
 
 ```bash
 # Witness check (expect VIOLATION):
 quint run spec.qnt --main=Module --invariant=witnessName --max-steps=100 --max-samples=100 --backend=typescript
 # Invariant check (expect NO violation):
-quint run spec.qnt --main=Module --invariant=invariantName --max-steps=200 --max-samples=500 --backend=typescript
+quint run spec.qnt --main=Module --invariant=invariantName --max-steps=50 --max-samples=100 --backend=typescript
 # Reproduce a violation with seed:
 quint run spec.qnt --main=Module --invariant=name --seed=0x1234 --verbosity=3 --backend=typescript
 # Run deterministic tests:
@@ -64,7 +65,7 @@ are unsatisfiable, the witness predicate is stronger than intended.
 ### Basic Run
 
 ```bash
-quint run {file} --main={module} --invariant={name} --max-steps=200 --max-samples=500 --backend=typescript```
+quint run {file} --main={module} --invariant={name} --max-steps=50 --max-samples=100 --backend=typescript```
 
 ### When Invariant is Violated (BUG)
 
