@@ -182,7 +182,7 @@ module {moduleName}Test {
 
 Run tests with:
 ```bash
-quint test {test_file} --main={testModule} --match="Test" --backend=typescript
+quint test {test_file} --main={testModule} --match="Test"
 ```
 
 **Important**: Always name `run` definitions with a `Test` suffix (e.g. `basicOperationTest`). The `--match` flag matches against ALL definitions in the module, not just `run` definitions. Using `--match=".*"` will cause Quint to try executing pure vals, pure defs, and actions as tests, producing spurious failures.

@@ -13,32 +13,24 @@
 
 ### Commands
 
-**Always pass `--backend=typescript` to `quint run` and `quint test`.** The
-default `rust` backend downloads a native binary from GitHub on first use and
-needs a recent glibc — neither is available in this offline sandbox, so it
-fails. The built-in TypeScript backend needs no download and is plenty fast for
-these specs. (`quint typecheck` doesn't execute the spec, so it needs no
-backend flag.)
-
 **Prefix every `quint` command — and only `quint` commands — with `timeout
-60`.** (Never wrap project build/test commands like `go build` or `npm test`
-in this short timeout; they take minutes and it will kill them.) Typecheck is
-sub-second; `quint run` on a real spec takes seconds to tens of seconds (the
-TypeScript evaluator is interpreted), so 60s gives headroom while still catching
-a genuine hang. If a run keeps hitting 60s, shrink the spec or the
-`--max-samples`/`--max-steps` budget rather than raising the timeout. The
-examples below omit the `timeout` prefix for brevity — always add it in
-practice.
+30`.** (Never wrap project build/test commands like `go build` or `npm test`
+in this short timeout; they take minutes and it will kill them.) A well-formed
+spec typechecks and simulates in well under a second, so 30s only ever fires on
+a pathological spec that would otherwise hang (see `apalache::generate` in
+builtins.md) — killing it so you get an error to react to instead of a dead
+turn. The examples below omit the `timeout` prefix for brevity — always add it
+in practice.
 
 ```bash
 # Witness check (expect VIOLATION):
-quint run spec.qnt --main=Module --invariant=witnessName --max-steps=100 --max-samples=100 --backend=typescript
+quint run spec.qnt --main=Module --invariant=witnessName --max-steps=100 --max-samples=100
 # Invariant check (expect NO violation):
-quint run spec.qnt --main=Module --invariant=invariantName --max-steps=50 --max-samples=100 --backend=typescript
+quint run spec.qnt --main=Module --invariant=invariantName --max-steps=50 --max-samples=100
 # Reproduce a violation with seed:
-quint run spec.qnt --main=Module --invariant=name --seed=0x1234 --verbosity=3 --backend=typescript
+quint run spec.qnt --main=Module --invariant=name --seed=0x1234 --verbosity=3
 # Run deterministic tests:
-quint test spec_test.qnt --main=TestModule --match="testName" --backend=typescript
+quint test spec_test.qnt --main=TestModule --match="testName"
 ```
 
 ## Witnesses
@@ -65,14 +57,14 @@ are unsatisfiable, the witness predicate is stronger than intended.
 ### Basic Run
 
 ```bash
-quint run {file} --main={module} --invariant={name} --max-steps=50 --max-samples=100 --backend=typescript```
+quint run {file} --main={module} --invariant={name} --max-steps=50 --max-samples=100```
 
 ### When Invariant is Violated (BUG)
 
 1. **Capture seed** from output
 2. **Get detailed trace:**
    ```bash
-   quint run {file} --main={module} --invariant={name} --seed={seed} --verbosity=3 --backend=typescript```
+   quint run {file} --main={module} --invariant={name} --seed={seed} --verbosity=3```
 3. **Analyze trace:**
    - Find the step where invariant became false
    - Identify the action that caused the transition
@@ -85,8 +77,8 @@ quint run {file} --main={module} --invariant={name} --max-steps=50 --max-samples
 ## Running Tests
 
 ```bash
-quint test {test_file} --main={module} --match="testName" --backend=typescript
-quint test {test_file} --main={module} --match=".*" --backend=typescript  # all tests
+quint test {test_file} --main={module} --match="testName"
+quint test {test_file} --main={module} --match=".*"  # all tests
 ```
 
 ### Debugging Failed Tests
