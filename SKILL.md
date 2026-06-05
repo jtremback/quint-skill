@@ -124,7 +124,7 @@ match on the *shape of your design*, not the topic.
 | A staged lifecycle / multi-phase operation (e.g. start → prepare → commit/abort) | `/opt/quint-skill/guidelines/examples/two_phase_commit.qnt` — read for the phase-transition structure |
 | A turn-based or step-by-step state machine | `/opt/quint-skill/guidelines/examples/tictactoe.qnt` |
 | Small self-contained logic with tricky constraints | `/opt/quint-skill/guidelines/examples/prisoners.qnt` |
-| Multiple actors exchanging messages or taking interleaved steps | `/opt/quint-skill/guidelines/examples/consensus.qnt` (and `/opt/quint-skill/guidelines/examples/two_phase_commit_choreo.qnt` only if the Choreo framework is present) |
+| Multiple actors exchanging messages or taking interleaved steps | `/opt/quint-skill/guidelines/examples/consensus.qnt`; for a message-passing protocol consider the **Choreo** framework (see `choreo-template.md` + the worked example at `/opt/quint-skill/guidelines/choreo/examples/two_phase_commit/two_phase_commit.qnt`) |
 
 If you need a specific operator's signature, read `/opt/quint-skill/guidelines/builtins.md`.
 

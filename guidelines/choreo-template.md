@@ -2,7 +2,23 @@
 
 Use this template for: consensus algorithms (PBFT, Tendermint, HotStuff, Raft), Byzantine fault tolerant protocols, distributed coordination, message-passing systems, multi-phase commit protocols.
 
-**Prerequisite**: Choreo framework must be available at `specs/choreo/`. If not present, either vendor it into `specs/choreo/` yourself, or skip the choreo template and model with the standard State-type pattern instead.
+**Setup**: the Choreo framework is vendored at `/opt/quint-skill/choreo/`
+(`choreo.qnt` + `spells/basicSpells.qnt`). Quint resolves imports relative to
+your spec file, so copy the framework next to your spec, then use the plain
+relative imports:
+
+```bash
+mkdir -p /tmp/quint-specs
+cp /opt/quint-skill/choreo/choreo.qnt /tmp/quint-specs/
+cp -r /opt/quint-skill/choreo/spells /tmp/quint-specs/
+# write your protocol at /tmp/quint-specs/<proto>.qnt, then:
+#   import basicSpells.* from "spells/basicSpells"
+#   import choreo(processes = NODES) as choreo from "choreo"
+# typecheck / run from /tmp/quint-specs/
+```
+
+A complete worked example using the framework is at
+`/opt/quint-skill/choreo/examples/two_phase_commit/two_phase_commit.qnt`.
 
 ## Architecture: Roles + Messages + Stages + Listeners + Effects
 
