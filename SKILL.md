@@ -46,6 +46,16 @@ machine, one invariant, one race — is fine. Quint only fails to help when
 nothing in the task has subtle state at all (a rename, a signature change, a
 pure string transform).
 
+**Model side-effects, not just the resulting state.** When the behavior must
+*do* something on a transition — fire a callback, emit an event, send a
+notification, bump a metric — model that effect as part of the state: accumulate
+it (e.g. an `emitted: List[...]` log, or a per-key counter) and write
+invariants/witnesses over it ("a `demoted` event fires whenever an active item
+is displaced", "every cancel path emits exactly one notification"). A spec that
+tracks only the end state can't catch "the right effect fired on the right
+transition" — and that's exactly the kind of requirement that's easy to
+under-implement and easy to miss without a model.
+
 ## The pipeline
 
 1. **Name the property.** For the slice you're modeling, state the safety
